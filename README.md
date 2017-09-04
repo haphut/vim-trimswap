@@ -1,16 +1,18 @@
 # vim-trimswap
 
 Remove redundant Vim swap files from the swap directory.
-If you do not use a single central swap directory for Vim, vim-trimswap is not for you.
 
-For each swap file currently not in use and containing no changes in comparison to the original, manually saved file, vim-trimswap will remove the swap file.
+vim-trimswap will remove each swap file that contains no changes in comparison to the original, manually saved file and that is not in use by a running process.
 
-vim-trimswap relies on Vim to detect the inactive and unmodified swap files.
-Vim makes mistakes.
-There are at least some false negatives, e.g. swap files that would be safe to remove but are falsely detected to be handled by a still-running process.
-I have not yet seen false positives but your mileage may vary.
 
-vim-trimswap relies on the output of `vim -r` to be in English and in UTF-8.
+## Assumptions for correct behavior
+
+- Vim uses only one directory for swap files, e.g. with `set directory=~/.vim/swap//` in vimrc.
+- The output of `vim -r` is in English and in UTF-8.
+- `vim -r` does not detect modified swap files as unmodified.
+- `vim -r` does not detect active swap files as inactive.
+    - It does happen that swap files are falsely detected to be handled by a running process, though. That is why vim-trimswap might not remove all expected files.
+
 
 ## Usage
 
