@@ -51,7 +51,7 @@ def separate_items(lines):
 
 def get_swap_directory(lines):
     dir_line = lines[1]
-    match = re.fullmatch(r' {3}In directory (.*):\Z', dir_line)
+    match = re.fullmatch(r'^ {3}In directory (.*):\Z', dir_line)
     if not match:
         raise ValueError('Could not parse swap directory from: ' + dir_line)
     swap_dir_string = match.group(1)
