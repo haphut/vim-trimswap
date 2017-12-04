@@ -68,9 +68,13 @@ def get_swap_status():
         stderr=subprocess.PIPE,
         check=True,
         encoding='utf-8').stderr.splitlines()
-    swap_dir = get_swap_directory(swap_lines)
-    parse = create_swap_item_parser()
-    details = [parse(item) for item in separate_items(swap_lines)]
+    if len(swap_lines) < 5:
+        swap_dir = None
+        details = []
+    else:
+        swap_dir = get_swap_directory(swap_lines)
+        parse = create_swap_item_parser()
+        details = [parse(item) for item in separate_items(swap_lines)]
     return swap_dir, details
 
 
