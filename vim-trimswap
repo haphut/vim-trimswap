@@ -15,8 +15,7 @@ def create_swap_item_parser():
         is_modified_source = lines[3]
         is_running_source = lines[5]
 
-        swap_filename_match = swap_filename = swap_filename_reo.fullmatch(
-            swap_filename_source)
+        swap_filename_match = swap_filename_reo.fullmatch(swap_filename_source)
         if not swap_filename_match:
             raise ValueError('swap_filename is in unexpected form: ' +
                              swap_filename_source)
