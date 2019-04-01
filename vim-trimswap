@@ -8,7 +8,8 @@ import subprocess
 def create_swap_item_parser():
     swap_filename_reo = re.compile(r'^\d+\. {4}(.+)\Z')
     is_modified_reo = re.compile(r'^ {10}modified: (no|YES)\Z')
-    is_running_reo = re.compile(r'^ {8}process ID: \d+(| \(still running\))\Z')
+    is_running_reo = re.compile(r'^ {8}process ID: \d+(| \(still running\))\Z',
+                                re.IGNORECASE)
 
     def parse(lines):
         swap_filename_source = lines[0]
