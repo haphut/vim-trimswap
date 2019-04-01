@@ -6,10 +6,11 @@ import subprocess
 
 
 def create_swap_item_parser():
-    swap_filename_reo = re.compile(r'^\d+\. {4}(.+)\Z')
-    is_modified_reo = re.compile(r'^ {10}modified: (no|YES)\Z')
-    is_running_reo = re.compile(r'^ {8}process ID: \d+(| \(still running\))\Z',
-                                re.IGNORECASE)
+    swap_filename_reo = re.compile(r"^\d+\. {4}(.+)\Z")
+    is_modified_reo = re.compile(r"^ {10}modified: (no|YES)\Z")
+    is_running_reo = re.compile(
+        r"^ {8}process ID: \d+(| \(still running\))\Z", re.IGNORECASE
+    )
 
     def parse(lines):
         swap_filename_source = lines[0]
@@ -18,26 +19,29 @@ def create_swap_item_parser():
 
         swap_filename_match = swap_filename_reo.fullmatch(swap_filename_source)
         if not swap_filename_match:
-            raise ValueError('swap_filename is in unexpected form: ' +
-                             swap_filename_source)
+            raise ValueError(
+                "swap_filename is in unexpected form: " + swap_filename_source
+            )
         swap_filename = swap_filename_match.group(1)
 
         is_modified_match = is_modified_reo.fullmatch(is_modified_source)
         if not is_modified_match:
-            raise ValueError('is_modified is in unexpected form: ' +
-                             is_modified_source)
-        is_modified = is_modified_match.group(1) == 'YES'
+            raise ValueError(
+                "is_modified is in unexpected form: " + is_modified_source
+            )
+        is_modified = is_modified_match.group(1) == "YES"
 
         is_running_match = is_running_reo.fullmatch(is_running_source)
         if not is_running_match:
-            raise ValueError('is_running is in unexpected form: ' +
-                             is_running_source)
-        is_running = is_running_match.group(1) == ' (still running)'
+            raise ValueError(
+                "is_running is in unexpected form: " + is_running_source
+            )
+        is_running = is_running_match.group(1) == " (still running)"
 
         return {
-            'swap_filename': swap_filename,
-            'is_modified': is_modified,
-            'is_running': is_running,
+            "swap_filename": swap_filename,
+            "is_modified": is_modified,
+            "is_running": is_running,
         }
 
     return parse
@@ -46,28 +50,31 @@ def create_swap_item_parser():
 def separate_items(lines):
     step = 6
     lines = lines[2:-1]
-    return (lines[start:start + step] for start in range(0, len(lines), step))
+    return (
+        lines[start : start + step] for start in range(0, len(lines), step)
+    )
 
 
 def get_swap_directory(lines):
     dir_line = lines[1]
-    match = re.fullmatch(r'^ {3}In directory (.*):\Z', dir_line)
+    match = re.fullmatch(r"^ {3}In directory (.*):\Z", dir_line)
     if not match:
-        raise ValueError('Could not parse swap directory from: ' + dir_line)
+        raise ValueError("Could not parse swap directory from: " + dir_line)
     swap_dir_string = match.group(1)
     swap_dir = pathlib.Path(swap_dir_string).expanduser()
     if not swap_dir.is_dir():
-        raise ValueError('swap_dir is not a directory: ' + str(swap_dir))
+        raise ValueError("swap_dir is not a directory: " + str(swap_dir))
     return swap_dir
 
 
 def get_swap_status():
     swap_lines = subprocess.run(
-        ['vim', '-r'],
+        ["vim", "-r"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
         check=True,
-        encoding='utf-8').stderr.splitlines()
+        encoding="utf-8",
+    ).stderr.splitlines()
     if len(swap_lines) < 5:
         swap_dir = None
         details = []
@@ -81,8 +88,9 @@ def get_swap_status():
 def find_safe_to_remove_swap_files():
     swap_dir, swap_details = get_swap_status()
     safe_to_remove = [
-        sd['swap_filename'] for sd in swap_details
-        if not sd['is_modified'] and not sd['is_running']
+        sd["swap_filename"]
+        for sd in swap_details
+        if not sd["is_modified"] and not sd["is_running"]
     ]
     swap_files = [swap_dir / filename for filename in safe_to_remove]
     return swap_files
